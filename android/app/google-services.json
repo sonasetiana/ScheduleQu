@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "773156350653",
+    "project_id": "jadwalqu-2e770",
+    "storage_bucket": "jadwalqu-2e770.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:773156350653:android:b1473b463080b14799a5d4",
+        "android_client_info": {
+          "package_name": "com.app.sonasetiana.schedule_qu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUl36JEFJ01wztRqcTIQGReIAhldkAF0Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

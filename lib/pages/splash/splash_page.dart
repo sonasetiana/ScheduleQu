@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:schedule_qu/pages/home/home_page.dart';
+import 'package:schedule_qu/pages/user/user_page.dart';
 
 import '../../bloc/splash/splash_bloc.dart';
 
@@ -10,15 +11,15 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<SplashBloc, void>(
+      bloc: context.read<SplashBloc>(),
       listener: (context, state) {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) =>
-              const HomePage(), // Ganti dengan layar utama Anda
+          builder: (context) => UserPage(), // Ganti dengan layar utama Anda
         ));
       },
       child: Scaffold(
         backgroundColor: Colors.purple[400],
-        body: Center(
+        body: const Center(
           child: Text(
             'ScheduleQu',
             style: TextStyle(

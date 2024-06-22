@@ -7,18 +7,16 @@ class ScheduleModel extends Equatable {
   final String title;
   final String description;
   final Timestamp scheduleTime;
-  final String colorType;
 
   const ScheduleModel({
-    required this.docId,
+    this.docId = '',
     required this.title,
     required this.description,
     required this.scheduleTime,
-    required this.colorType,
   });
 
   @override
-  List<Object> get props => [title, description, scheduleTime, colorType];
+  List<Object> get props => [title, description, scheduleTime];
 
   factory ScheduleModel.fromCollection(
       String docId, Map<String, dynamic> data) {
@@ -27,7 +25,6 @@ class ScheduleModel extends Equatable {
       title: data['title'],
       description: data['description'],
       scheduleTime: data['schedule_time'],
-      colorType: data['color_type'],
     );
   }
 
@@ -36,7 +33,6 @@ class ScheduleModel extends Equatable {
       'title': title,
       'description': description,
       'schedule_time': scheduleTime,
-      'color_type': colorType,
     };
   }
 }

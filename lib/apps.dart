@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:schedule_qu/bloc/schedule/add/add_schedule_bloc.dart';
 import 'package:schedule_qu/bloc/schedule/schedule_bloc.dart';
 import 'package:schedule_qu/bloc/schedule/schedule_cubit.dart';
 import 'package:schedule_qu/bloc/splash/splash_bloc.dart';
@@ -35,6 +36,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => PickDateTimeCubit(),
+        ),
+        BlocProvider(
+          create: (context) => AddScheduleBloc(scheduleRepository),
         ),
       ],
       child: MaterialApp.router(

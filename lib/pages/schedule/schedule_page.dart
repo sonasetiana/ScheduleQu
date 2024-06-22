@@ -1,8 +1,11 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:schedule_qu/bloc/pick_date_time/pick_date_time_cubit.dart';
+import 'package:schedule_qu/bloc/schedule/add/add_schedule_bloc.dart';
+import 'package:schedule_qu/data/models/schedule_model.dart';
 import 'package:schedule_qu/pages/widgets/custom_app_bar.dart';
 
 class SchedulePage extends StatelessWidget {
@@ -15,6 +18,7 @@ class SchedulePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PickDateTimeCubit pickDateTimeBloc = context.read<PickDateTimeCubit>();
+    AddScheduleBloc addScheduleBloc = context.read<AddScheduleBloc>();
     return Scaffold(
       appBar: const CustomAppBar(title: 'Add Schedule'),
       body: SingleChildScrollView(
@@ -84,6 +88,81 @@ class SchedulePage extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: 8),
+                child: MultiBlocListener(
+                  listeners: [
+                    BlocListener<AddScheduleBloc, AddScheduleState>(
+                      listener: (context, state) {
+                        titleController.value =
+                            const TextEditingValue(text: '');
+                        descController.value = const TextEditingValue(text: '');
+                        timeController.value = const TextEditingValue(text: '');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 1),
+                            content: Text(state.message),
+                          ),
+                        );
+                      },
+                      listenWhen: (previous, current) =>
+                          current is AddScheduleSuccess,
+                    ),
+                    BlocListener<AddScheduleBloc, AddScheduleState>(
+                      listener: (context, state) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 1),
+                            content: Text(state.message),
+                          ),
+                        );
+                      },
+                      listenWhen: (previous, current) =>
+                          current is AddScheduleError,
+                    )
+                  ],
+                  child: BlocBuilder<AddScheduleBloc, AddScheduleState>(
+                    bloc: addScheduleBloc,
+                    builder: (context, state) {
+                      return ElevatedButton(
+                        onPressed: () {
+                          String title = titleController.text;
+                          String desc = titleController.text;
+                          String pickDateTime = timeController.text;
+
+                          bool isFieldValid = title.isNotEmpty &&
+                              desc.isNotEmpty &&
+                              pickDateTime.isNotEmpty;
+
+                          ScheduleModel schedule = ScheduleModel(
+                            title: title,
+                            description: desc,
+                            scheduleTime: Timestamp.fromDate(
+                              pickDateTimeBloc.getDateTime(),
+                            ),
+                          );
+                          addScheduleBloc.add(
+                            SubmitScheduleEvent(schedule, isFieldValid),
+                          );
+                        },
+                        child: Builder(builder: (context) {
+                          if (state is AddScheduleLoading) {
+                            return const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            );
+                          }
+                          return const Text('SIMPAN');
+                        }),
+                      );
+                    },
+                  ),
+                ),
               ),
             ],
           ),

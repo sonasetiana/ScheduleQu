@@ -3,12 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 class ScheduleModel extends Equatable {
+  final String docId;
   final String title;
   final String description;
   final Timestamp scheduleTime;
   final String colorType;
 
   const ScheduleModel({
+    required this.docId,
     required this.title,
     required this.description,
     required this.scheduleTime,
@@ -18,8 +20,10 @@ class ScheduleModel extends Equatable {
   @override
   List<Object> get props => [title, description, scheduleTime, colorType];
 
-  factory ScheduleModel.fromJson(Map<String, dynamic> data) {
+  factory ScheduleModel.fromCollection(
+      String docId, Map<String, dynamic> data) {
     return ScheduleModel(
+      docId: docId,
       title: data['title'],
       description: data['description'],
       scheduleTime: data['schedule_time'],

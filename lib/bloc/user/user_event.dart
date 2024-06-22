@@ -1,18 +1,19 @@
 part of 'user_bloc.dart';
 
 sealed class UserEvent extends Equatable {
-  const UserEvent(this.username);
+  const UserEvent(this.username, this.password);
 
   final String username;
+  final String password;
 
   @override
   List<Object> get props => [username];
 }
 
-class CheckUserEvent extends UserEvent {
-  const CheckUserEvent(super.username);
+class UserLoginEvent extends UserEvent {
+  const UserLoginEvent(super.username, super.password);
 }
 
-class RegisterUserEvent extends UserEvent {
-  const RegisterUserEvent(super.username);
+class UserRegisterEvent extends UserEvent {
+  const UserRegisterEvent(super.username, super.password);
 }

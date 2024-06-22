@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:schedule_qu/pages/splash/splash_page.dart';
+import 'package:schedule_qu/app_routes.dart';
 import 'package:schedule_qu/pages/widgets/dialog.dart';
 
 import '../../bloc/user/user_bloc.dart';
-import 'widget/loading_check_user.dart';
-import 'widget/username_field.dart';
 
 class UserPage extends StatelessWidget {
-  const UserPage({super.key});
+  UserPage({super.key});
 
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     UserBloc userBloc = context.read<UserBloc>();
@@ -31,7 +31,7 @@ class UserPage extends StatelessWidget {
               ),
             ),
             const Text(
-              'Silahkan masukkan username Anda.',
+              'Silahkan login atau register akun Anda.',
               style: TextStyle(
                 color: Colors.white,
               ),
@@ -39,19 +39,33 @@ class UserPage extends StatelessWidget {
             const SizedBox(
               height: 16,
             ),
-            UsernameField(callback: (value) {
-              userBloc.add(CheckUserEvent(value));
-            }),
-            MultiBlocListener(
-              listeners: [
-                _listenFailCheckUser(userBloc),
-                _listenSuccessRegisterUser(userBloc),
-              ],
-              child: BlocBuilder<UserBloc, UserState>(
-                bloc: userBloc,
-                builder: (context, state) {
-                  return LoadingCheckUser(state: state);
-                },
+            TextFormField(
+              controller: usernameController,
+              keyboardType: TextInputType.name,
+              textCapitalization: TextCapitalization.none,
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(
+                labelText: 'Username',
+                fillColor: Colors.white,
+                focusColor: Colors.white,
+                border: UnderlineInputBorder(),
+                filled: true,
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            TextFormField(
+              controller: passwordController,
+              keyboardType: TextInputType.visiblePassword,
+              obscureText: true,
+              textInputAction: TextInputAction.done,
+              decoration: const InputDecoration(
+                labelText: 'Password',
+                fillColor: Colors.white,
+                focusColor: Colors.white,
+                border: UnderlineInputBorder(),
+                filled: true,
               ),
             ),
             const SizedBox(
@@ -59,23 +73,44 @@ class UserPage extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.topRight,
-              child: BlocSelector<UserBloc, UserState, bool>(
-                bloc: userBloc,
-                selector: (state) {
-                  return state is UserCheckSuccess ||
-                      state is UserRegisterSuccess;
-                },
-                builder: (context, state) {
-                  return Visibility(
-                    visible: state,
-                    child: ElevatedButton(
+              child: MultiBlocListener(
+                listeners: [
+                  _listenErrorLogin(userBloc),
+                  _listenSuccessLogin(userBloc),
+                  _listenSuccessRegister(userBloc)
+                ],
+                child: BlocBuilder<UserBloc, UserState>(
+                  bloc: userBloc,
+                  builder: (context, state) {
+                    return ElevatedButton(
                       onPressed: () {
-                        context.replace('/home');
+                        String username = usernameController.text;
+                        String password = passwordController.text;
+                        userBloc.add(
+                          UserLoginEvent(username, password),
+                        );
                       },
-                      child: const Text('Next'),
-                    ),
-                  );
-                },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple[100],
+                      ),
+                      child: Builder(builder: (context) {
+                        if (state is UserLoading) {
+                          return const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          );
+                        }
+                        return const Text(
+                          'LOGIN or REGISTER',
+                          style: TextStyle(color: Colors.deepPurple),
+                        );
+                      }),
+                    );
+                  },
+                ),
               ),
             ),
           ],
@@ -84,7 +119,7 @@ class UserPage extends StatelessWidget {
     );
   }
 
-  BlocListener _listenFailCheckUser(UserBloc bloc) {
+  BlocListener _listenErrorLogin(UserBloc bloc) {
     return BlocListener<UserBloc, UserState>(
       bloc: bloc,
       listener: (context, state) {
@@ -94,7 +129,14 @@ class UserPage extends StatelessWidget {
           message: state.message,
           titlePosButton: 'Ya, Daftar',
           onPositiveClick: () {
-            bloc.add(RegisterUserEvent(state.data));
+            String username = usernameController.text;
+            String password = passwordController.text;
+            bloc.add(
+              UserRegisterEvent(
+                username,
+                password,
+              ),
+            );
           },
         );
       },
@@ -102,17 +144,33 @@ class UserPage extends StatelessWidget {
     );
   }
 
-  BlocListener _listenSuccessRegisterUser(UserBloc bloc) {
+  BlocListener _listenSuccessLogin(UserBloc bloc) {
     return BlocListener<UserBloc, UserState>(
       bloc: bloc,
       listener: (context, state) {
-        showAlertDialog(
-          context,
-          title: 'Success',
-          message: state.message,
-          visibleNegativeButton: false,
-          titlePosButton: 'Ok',
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 1),
+            content: Text(state.message),
+          ),
         );
+        context.replace('/home');
+      },
+      listenWhen: (previous, current) => current is UserLoginSuccess,
+    );
+  }
+
+  BlocListener _listenSuccessRegister(UserBloc bloc) {
+    return BlocListener<UserBloc, UserState>(
+      bloc: bloc,
+      listener: (context, state) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 1),
+            content: Text(state.message),
+          ),
+        );
+        context.replace('/home');
       },
       listenWhen: (previous, current) => current is UserRegisterSuccess,
     );

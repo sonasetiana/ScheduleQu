@@ -12,9 +12,7 @@ class LoadingCheckUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Visibility(
-      visible: state is UserLoading ||
-          state is UserCheckSuccess ||
-          state is UserRegisterSuccess,
+      visible: state is UserLoading || state is UserLoginSuccess,
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
@@ -41,7 +39,7 @@ class LoadingCheckUser extends StatelessWidget {
               width: 18,
               height: 18,
               child: Builder(builder: (context) {
-                if (state is UserCheckSuccess || state is UserRegisterSuccess) {
+                if (state is UserLoginSuccess) {
                   return const Icon(
                     Icons.check_circle,
                     color: Colors.green,

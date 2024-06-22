@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:schedule_qu/core/app_configs.dart';
+import 'package:schedule_qu/data/models/collection_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class UserLocalProvider {
-  String? getUsername();
-  Future<void> setUsername(String username);
+  CollectionModel? getCollectionModel();
+  Future<void> saveCollection(CollectionModel collection);
 }
 
 class UserLocalProviderImpl extends UserLocalProvider {
@@ -12,12 +15,18 @@ class UserLocalProviderImpl extends UserLocalProvider {
   UserLocalProviderImpl({required this.prefs});
 
   @override
-  String? getUsername() {
-    return prefs.getString(AppConfigs.keyUsername);
+  Future<void> saveCollection(CollectionModel collection) async {
+    await prefs.setString(
+      AppConfigs.keySubCollection,
+      jsonEncode(
+        collection.toJson(),
+      ),
+    );
   }
 
   @override
-  Future<void> setUsername(String username) async {
-    await prefs.setString(AppConfigs.keyUsername, username);
+  CollectionModel? getCollectionModel() {
+    String? json = prefs.getString(AppConfigs.keySubCollection);
+    return json != null ? CollectionModel.fromJson(jsonDecode(json)) : null;
   }
 }

@@ -25,8 +25,7 @@ class ScheduleRepositoryImpl extends ScheduleRepository {
   Future<Either<Failure, List<ScheduleModel>>> getAllSchedule(
       DateTime selectedDate) async {
     try {
-      final allSchedule = await remoteProvider
-          .getAllSchedule(userLocalProvider.getUsername() ?? '');
+      final allSchedule = await remoteProvider.getAllSchedule('');
 
       final filterSchedule = allSchedule
           .where((e) => isSameDate(e.scheduleTime.toDate(), selectedDate))

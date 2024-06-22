@@ -8,10 +8,10 @@ class SplashPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SplashBloc, String?>(
+    return BlocListener<SplashBloc, bool>(
       bloc: context.read<SplashBloc>(),
       listener: (context, state) {
-        context.replace(state == null ? '/user' : '/home');
+        context.replace(state ? '/home' : '/user');
       },
       child: Scaffold(
         backgroundColor: Colors.purple[400],

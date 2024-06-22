@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => SplashBloc(
-            userRepository.getUsername(),
+            userRepository.getCollectionModel(),
           ),
         ),
         BlocProvider(

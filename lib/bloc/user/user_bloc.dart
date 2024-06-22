@@ -7,29 +7,50 @@ part 'user_state.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
   final UserRepository repository;
-  UserBloc(this.repository) : super(const UserInitial('', '')) {
-    on<CheckUserEvent>((event, emit) async {
-      emit(UserLoading(event.username, 'Checking your username...'));
-      final result = await repository.checkUsername(event.username);
-      result.fold(
+  UserBloc(this.repository) : super(const UserInitial('')) {
+    on<UserLoginEvent>((event, emit) async {
+      emit(UserLoading(state.message));
+      if (event.username.isEmpty) {
+        emit(const UserError('Username masih kosong'));
+        return;
+      }
+      if (event.password.isEmpty) {
+        emit(const UserError('Password masih kosong'));
+        return;
+      }
+      final login = await repository.login(
+        event.username,
+        event.password,
+      );
+      login.fold(
         (failure) {
-          emit(UserError(state.data, failure.message));
+          emit(UserError(failure.message));
         },
         (message) {
-          emit(UserCheckSuccess(state.data, message));
+          emit(UserLoginSuccess(message));
         },
       );
     });
-
-    on<RegisterUserEvent>((event, emit) async {
-      emit(UserLoading(state.data, 'Mendaftarkan user...'));
-      final result = await repository.registerUsername(event.username);
-      result.fold(
+    on<UserRegisterEvent>((event, emit) async {
+      emit(UserLoading(state.message));
+      if (event.username.isEmpty) {
+        emit(const UserError('Username masih kosong'));
+        return;
+      }
+      if (event.password.isEmpty) {
+        emit(const UserError('Password masih kosong'));
+        return;
+      }
+      final login = await repository.register(
+        event.username,
+        event.password,
+      );
+      login.fold(
         (failure) {
-          emit(UserError(state.data, failure.message));
+          emit(UserError(failure.message));
         },
         (message) {
-          emit(UserRegisterSuccess(state.data, message));
+          emit(UserRegisterSuccess(message));
         },
       );
     });

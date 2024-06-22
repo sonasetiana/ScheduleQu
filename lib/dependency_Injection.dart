@@ -5,7 +5,6 @@ import 'package:schedule_qu/data/provider/remote/schedule_remote_provider.dart';
 import 'package:schedule_qu/data/provider/remote/user_remote_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'core/app_configs.dart';
 import 'data/repository/schedule_repository.dart';
 import 'data/repository/user_repository.dart';
 
@@ -14,9 +13,7 @@ class DependencyInjection {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final GetIt getIt = GetIt.I;
 
-    getIt.registerSingleton<CollectionReference>(
-      FirebaseFirestore.instance.collection(AppConfigs.defaultCollection),
-    );
+    getIt.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
 
     getIt.registerSingleton<UserLocalProvider>(
       UserLocalProviderImpl(prefs: prefs),
@@ -24,13 +21,13 @@ class DependencyInjection {
 
     getIt.registerSingleton<UserRemoteProvider>(
       UserRemoteProviderImpl(
-        reference: getIt<CollectionReference>(),
+        firestore: getIt<FirebaseFirestore>(),
       ),
     );
 
     getIt.registerSingleton<ScheduleRemoteProvider>(
       ScheduleRemoteProviderImpl(
-        reference: getIt<CollectionReference>(),
+        firestore: getIt<FirebaseFirestore>(),
       ),
     );
 

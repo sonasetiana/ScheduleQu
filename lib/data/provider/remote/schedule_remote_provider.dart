@@ -10,6 +10,14 @@ abstract class ScheduleRemoteProvider {
     CollectionModel? collection,
     ScheduleModel schedule,
   );
+  Future<void> delteSchedule(
+    CollectionModel? collection,
+    String documentId,
+  );
+  Future<void> updateSchedule(
+    CollectionModel? collection,
+    ScheduleModel schedule,
+  );
 }
 
 class ScheduleRemoteProviderImpl extends ScheduleRemoteProvider {
@@ -21,12 +29,23 @@ class ScheduleRemoteProviderImpl extends ScheduleRemoteProvider {
   Future<List<ScheduleModel>> getAllSchedule(
       CollectionModel? collection) async {
     final subCollection = await firestore
-        .collection(AppConfigs.defaultCollection)
+        .collection(AppConfigs.scheduleCollection)
         .doc(collection?.documentId)
         .collection(collection?.collectionId ?? '')
         .get();
+    final emptyDoc = subCollection.docs.where((e) => e.data().isEmpty);
+
+    if (emptyDoc.isNotEmpty) {
+      await firestore
+          .collection(AppConfigs.scheduleCollection)
+          .doc(collection?.documentId)
+          .collection(collection?.collectionId ?? '')
+          .doc(emptyDoc.first.id)
+          .delete();
+    }
 
     return subCollection.docs
+        .where((e) => e.data().isNotEmpty)
         .map((e) => ScheduleModel.fromCollection(e.id, e.data()))
         .toList();
   }
@@ -41,5 +60,31 @@ class ScheduleRemoteProviderImpl extends ScheduleRemoteProvider {
         .doc(collection?.documentId)
         .collection(collection?.collectionId ?? '')
         .add(schedule.toJson());
+  }
+
+  @override
+  Future<void> delteSchedule(
+    CollectionModel? collection,
+    String documentId,
+  ) async {
+    return await firestore
+        .collection(AppConfigs.scheduleCollection)
+        .doc(collection?.documentId)
+        .collection(collection?.collectionId ?? '')
+        .doc(documentId)
+        .delete();
+  }
+
+  @override
+  Future<void> updateSchedule(
+    CollectionModel? collection,
+    ScheduleModel schedule,
+  ) async {
+    return await firestore
+        .collection(AppConfigs.scheduleCollection)
+        .doc(collection?.documentId)
+        .collection(collection?.collectionId ?? '')
+        .doc(schedule.docId)
+        .set(schedule.toJson());
   }
 }

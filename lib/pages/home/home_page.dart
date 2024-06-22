@@ -10,6 +10,7 @@ import 'package:schedule_qu/data/models/schedule_model.dart';
 import 'package:schedule_qu/pages/home/widget/custom_calendar.dart';
 
 import '../widgets/custom_app_bar.dart';
+import '../widgets/dialog.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -28,7 +29,7 @@ class HomePage extends StatelessWidget {
               scheduleBloc.add(GetAllSchedule(state));
               return Padding(
                 padding: const EdgeInsets.only(
-                  top: 24,
+                  top: 40,
                   bottom: 8,
                   left: 8,
                   right: 8,
@@ -78,14 +79,49 @@ class HomePage extends StatelessWidget {
                           itemBuilder: (context, index) {
                             ScheduleModel item = state.schedules[index];
                             return Card(
-                              child: ListTile(
-                                title: Text(item.title),
-                                subtitle: Text(
-                                  DateFormat(
-                                    AppConfigs.formatDisplayDateSchedule,
-                                    AppConfigs.localId,
-                                  ).format(item.scheduleTime.toDate()),
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ListTile(
+                                    title: Text(item.title),
+                                    subtitle: Text(
+                                      DateFormat(
+                                        AppConfigs.formatDisplayDateSchedule,
+                                        AppConfigs.localId,
+                                      ).format(item.scheduleTime.toDate()),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    child: Text(item.description),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        TextButton(
+                                          onPressed: () {},
+                                          child: const Text(
+                                            'Delete',
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {},
+                                          child: const Text('Edit'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                ],
                               ),
                             );
                           },

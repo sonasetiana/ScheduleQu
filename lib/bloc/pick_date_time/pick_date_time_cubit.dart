@@ -23,7 +23,7 @@ class PickDateTimeCubit extends Cubit<PickDateTimeState> {
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
-    if (pickedDate != null && pickedDate != state.dateTime) {
+    if (pickedDate != null) {
       emit(PickDateTimeOnDatePick(pickedDate, state.timeOfDay));
       pickTime(context);
     }
@@ -34,7 +34,7 @@ class PickDateTimeCubit extends Cubit<PickDateTimeState> {
       context: context,
       initialTime: state.timeOfDay,
     );
-    if (pickedTime != null && pickedTime != state.timeOfDay) {
+    if (pickedTime != null) {
       emit(PickDateTimeOnTimePick(state.dateTime, pickedTime));
     }
   }

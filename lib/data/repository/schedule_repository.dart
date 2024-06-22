@@ -12,6 +12,10 @@ abstract class ScheduleRepository {
   );
 
   Future<Either<Failure, String>> submitSchedule(ScheduleModel schedule);
+
+  Future<Either<Failure, String>> deleteSchedule(String documentId);
+
+  Future<Either<Failure, String>> editSchedule(ScheduleModel schedule);
 }
 
 class ScheduleRepositoryImpl extends ScheduleRepository {
@@ -46,6 +50,28 @@ class ScheduleRepositoryImpl extends ScheduleRepository {
       CollectionModel? collection = userLocalProvider.getCollectionModel();
       await remoteProvider.submitSchedule(collection, schedule);
       return const Right('Schedule berhasil ditambahkan');
+    } on Exception catch (e) {
+      return Left(Failure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> deleteSchedule(String documentId) async {
+    try {
+      CollectionModel? collection = userLocalProvider.getCollectionModel();
+      await remoteProvider.delteSchedule(collection, documentId);
+      return const Right('Schedule berhasil dihapus');
+    } on Exception catch (e) {
+      return Left(Failure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> editSchedule(ScheduleModel schedule) async {
+    try {
+      CollectionModel? collection = userLocalProvider.getCollectionModel();
+      await remoteProvider.updateSchedule(collection, schedule);
+      return const Right('Schedule berhasil diupdate');
     } on Exception catch (e) {
       return Left(Failure(message: e.toString()));
     }

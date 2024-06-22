@@ -129,7 +129,7 @@ class SchedulePage extends StatelessWidget {
                       return ElevatedButton(
                         onPressed: () {
                           String title = titleController.text;
-                          String desc = titleController.text;
+                          String desc = descController.text;
                           String pickDateTime = timeController.text;
 
                           bool isFieldValid = title.isNotEmpty &&

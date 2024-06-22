@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:schedule_qu/bloc/splash/splash_bloc.dart';
-import 'package:schedule_qu/bloc/user/user_bloc.dart';
+import 'bloc/user/user_bloc.dart';
+import 'data/repository/user_repository.dart';
 import 'pages/splash/splash_page.dart';
 
 class MyApp extends StatelessWidget {
@@ -12,7 +14,11 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => SplashBloc()),
-        BlocProvider(create: (context) => UserBloc(false)),
+        BlocProvider(
+          create: (context) => UserBloc(
+            GetIt.I.get<UserRepository>(),
+          ),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

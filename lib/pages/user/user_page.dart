@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:schedule_qu/bloc/user/user_bloc.dart';
+import 'package:schedule_qu/pages/widgets/dialog.dart';
 
-import '../widgets/debouncer.dart';
+import '../../bloc/user/user_bloc.dart';
+import 'widget/loading_check_user.dart';
+import 'widget/username_field.dart';
 
 class UserPage extends StatelessWidget {
-  UserPage({super.key});
-  final Debouncer _debouncer = Debouncer(
-    delay: const Duration(seconds: 1),
-  );
+  const UserPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,76 +37,49 @@ class UserPage extends StatelessWidget {
             const SizedBox(
               height: 16,
             ),
-            TextFormField(
-              keyboardType: TextInputType.name,
-              textCapitalization: TextCapitalization.words,
-              textInputAction: TextInputAction.done,
-              decoration: const InputDecoration(
-                labelText: 'Username',
-                fillColor: Colors.white,
-                focusColor: Colors.white,
-                border: UnderlineInputBorder(),
-                filled: true,
-              ),
-              onChanged: (value) {
-                _debouncer.run(() {
-                  userBloc.checkUsername(value);
-                });
-              },
-            ),
-            BlocBuilder<UserBloc, bool>(
+            UsernameField(callback: (value) {
+              userBloc.add(CheckUserEvent(value));
+            }),
+            BlocConsumer<UserBloc, UserState>(
               bloc: userBloc,
-              builder: (context, state) {
-                return Visibility.maintain(
-                  visible: state,
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.purple[50],
-                      borderRadius: const BorderRadius.vertical(
-                        bottom: Radius.circular(4),
-                      ),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 16,
-                    ),
-                    child: const Row(
-                      children: [
-                        Text(
-                          'Checking your username...',
-                          style: TextStyle(
-                            color: Colors.purple,
-                          ),
-                        ),
-                        Spacer(),
-                        SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            color: Colors.purple,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+              listener: (context, state) {
+                showAlertDialog(
+                  context,
+                  title: 'Failed',
+                  message: state.message,
+                  onPositiveClick: () {
+                    userBloc.add(RegisterUserEvent(state.data));
+                  },
                 );
               },
-            )
+              listenWhen: (previous, current) => current is UserError,
+              builder: (context, state) {
+                return LoadingCheckUser(state: state);
+              },
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            Align(
+              alignment: Alignment.topRight,
+              child: BlocSelector<UserBloc, UserState, bool>(
+                bloc: userBloc,
+                selector: (state) {
+                  return state is UserSuccess;
+                },
+                builder: (context, state) {
+                  return Visibility(
+                    visible: state,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: const Text('Next'),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
-      ),
-      floatingActionButton: BlocBuilder<UserBloc, bool>(
-        builder: (context, state) {
-          return FloatingActionButton.extended(
-            enableFeedback: !state,
-            onPressed: () {},
-            label: const Row(
-              children: [Text('Next'), Icon(Icons.chevron_right)],
-            ),
-          );
-        },
       ),
     );
   }

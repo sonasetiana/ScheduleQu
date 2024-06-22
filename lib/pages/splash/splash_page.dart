@@ -14,7 +14,8 @@ class SplashPage extends StatelessWidget {
       bloc: context.read<SplashBloc>(),
       listener: (context, state) {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => UserPage(), // Ganti dengan layar utama Anda
+          builder: (context) =>
+              const UserPage(), // Ganti dengan layar utama Anda
         ));
       },
       child: Scaffold(

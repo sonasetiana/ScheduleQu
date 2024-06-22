@@ -1,8 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:schedule_qu/bloc/user/user_bloc.dart';
+
+import '../widgets/debouncer.dart';
 
 class UserPage extends StatelessWidget {
   UserPage({super.key});
@@ -110,25 +110,5 @@ class UserPage extends StatelessWidget {
         },
       ),
     );
-  }
-}
-
-class Debouncer {
-  final Duration delay;
-  VoidCallback? _callback;
-  Timer? _timer;
-
-  Debouncer({required this.delay});
-
-  void run(VoidCallback callback) {
-    _callback = callback;
-    _timer?.cancel();
-    _timer = Timer(delay, () {
-      _callback?.call();
-    });
-  }
-
-  void dispose() {
-    _timer?.cancel();
   }
 }

@@ -12,7 +12,9 @@ class LoadingCheckUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Visibility(
-      visible: state is UserLoading || state is UserSuccess,
+      visible: state is UserLoading ||
+          state is UserCheckSuccess ||
+          state is UserRegisterSuccess,
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
@@ -28,24 +30,18 @@ class LoadingCheckUser extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Builder(builder: (context) {
-              String message = 'Checking your username...';
-              if (state is UserSuccess) {
-                message = state.message;
-              }
-              return Text(
-                message,
-                style: const TextStyle(
-                  color: Colors.purple,
-                ),
-              );
-            }),
+            Text(
+              state.message,
+              style: const TextStyle(
+                color: Colors.purple,
+              ),
+            ),
             const Spacer(),
             SizedBox(
               width: 18,
               height: 18,
               child: Builder(builder: (context) {
-                if (state is UserSuccess) {
+                if (state is UserCheckSuccess || state is UserRegisterSuccess) {
                   return const Icon(
                     Icons.check_circle,
                     color: Colors.green,

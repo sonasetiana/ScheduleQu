@@ -6,16 +6,20 @@ showAlertDialog(
   String message = '',
   String titleNegButton = 'Tidak',
   String titlePosButton = 'Ya',
+  bool visibleNegativeButton = true,
   VoidCallback? onNegativeClick,
   VoidCallback? onPositiveClick,
 }) {
   // set up the button
-  Widget negativeButton = TextButton(
-    child: Text(titleNegButton),
-    onPressed: () {
-      onNegativeClick?.call();
-      Navigator.pop(context);
-    },
+  Widget negativeButton = Visibility(
+    visible: visibleNegativeButton,
+    child: TextButton(
+      child: Text(titleNegButton),
+      onPressed: () {
+        onNegativeClick?.call();
+        Navigator.pop(context);
+      },
+    ),
   );
 
   Widget positiveButton = TextButton(

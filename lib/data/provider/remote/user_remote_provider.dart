@@ -17,6 +17,6 @@ class UserRemoteProviderImpl extends UserRemoteProvider {
 
   @override
   Future<void> registerUsername(String username) async {
-    return await reference.doc(username).set({});
+    return await reference.doc(username).set(<String, dynamic>{});
   }
 }

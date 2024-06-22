@@ -9,14 +9,27 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   final UserRepository repository;
   UserBloc(this.repository) : super(const UserInitial('', '')) {
     on<CheckUserEvent>((event, emit) async {
-      emit(UserLoading(state.data, state.message));
+      emit(UserLoading(event.username, 'Checking your username...'));
       final result = await repository.checkUsername(event.username);
       result.fold(
         (failure) {
           emit(UserError(state.data, failure.message));
         },
-        (username) {
-          emit(UserSuccess(username, 'Username ditemukan'));
+        (message) {
+          emit(UserCheckSuccess(state.data, message));
+        },
+      );
+    });
+
+    on<RegisterUserEvent>((event, emit) async {
+      emit(UserLoading(state.data, 'Mendaftarkan user...'));
+      final result = await repository.registerUsername(event.username);
+      result.fold(
+        (failure) {
+          emit(UserError(state.data, failure.message));
+        },
+        (message) {
+          emit(UserRegisterSuccess(state.data, message));
         },
       );
     });

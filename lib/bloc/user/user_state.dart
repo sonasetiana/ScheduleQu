@@ -22,6 +22,10 @@ final class UserError extends UserState {
   const UserError(super.data, super.message);
 }
 
-final class UserSuccess extends UserState {
-  const UserSuccess(super.data, super.message);
+final class UserCheckSuccess extends UserState {
+  const UserCheckSuccess(super.data, super.message);
+}
+
+final class UserRegisterSuccess extends UserState {
+  const UserRegisterSuccess(super.data, super.message);
 }

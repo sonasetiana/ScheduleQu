@@ -8,6 +8,7 @@ import 'package:dartz/dartz.dart';
 abstract class UserRepository {
   Future<Either<Failure, String>> checkUsername(String username);
   Future<Either<Failure, String>> registerUsername(String username);
+  String? getUsername();
 }
 
 class UserRepositoryImpl extends UserRepository {
@@ -25,7 +26,7 @@ class UserRepositoryImpl extends UserRepository {
       DocumentSnapshot snapshot = await remoteProvider.checkUsername(username);
       if (snapshot.exists) {
         await localProvider.setUsername(snapshot.id);
-        return Right(snapshot.id);
+        return const Right('Username ditemukan');
       } else {
         return Left(
           Failure(
@@ -42,11 +43,17 @@ class UserRepositoryImpl extends UserRepository {
   @override
   Future<Either<Failure, String>> registerUsername(String username) async {
     try {
+      print('RemoteRepo: $username');
       await remoteProvider.registerUsername(username);
       await localProvider.setUsername(username);
       return const Right('Username berhasil didaftarkan.');
     } on Exception catch (e) {
       return Left(Failure(message: e.toString()));
     }
+  }
+
+  @override
+  String? getUsername() {
+    return localProvider.getUsername();
   }
 }

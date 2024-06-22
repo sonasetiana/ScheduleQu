@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:schedule_qu/pages/splash/splash_page.dart';
 import 'package:schedule_qu/pages/widgets/dialog.dart';
 
 import '../../bloc/user/user_bloc.dart';
@@ -40,22 +42,17 @@ class UserPage extends StatelessWidget {
             UsernameField(callback: (value) {
               userBloc.add(CheckUserEvent(value));
             }),
-            BlocConsumer<UserBloc, UserState>(
-              bloc: userBloc,
-              listener: (context, state) {
-                showAlertDialog(
-                  context,
-                  title: 'Failed',
-                  message: state.message,
-                  onPositiveClick: () {
-                    userBloc.add(RegisterUserEvent(state.data));
-                  },
-                );
-              },
-              listenWhen: (previous, current) => current is UserError,
-              builder: (context, state) {
-                return LoadingCheckUser(state: state);
-              },
+            MultiBlocListener(
+              listeners: [
+                _listenFailCheckUser(userBloc),
+                _listenSuccessRegisterUser(userBloc),
+              ],
+              child: BlocBuilder<UserBloc, UserState>(
+                bloc: userBloc,
+                builder: (context, state) {
+                  return LoadingCheckUser(state: state);
+                },
+              ),
             ),
             const SizedBox(
               height: 16,
@@ -65,13 +62,16 @@ class UserPage extends StatelessWidget {
               child: BlocSelector<UserBloc, UserState, bool>(
                 bloc: userBloc,
                 selector: (state) {
-                  return state is UserSuccess;
+                  return state is UserCheckSuccess ||
+                      state is UserRegisterSuccess;
                 },
                 builder: (context, state) {
                   return Visibility(
                     visible: state,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.replace('/home');
+                      },
                       child: const Text('Next'),
                     ),
                   );
@@ -81,6 +81,40 @@ class UserPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  BlocListener _listenFailCheckUser(UserBloc bloc) {
+    return BlocListener<UserBloc, UserState>(
+      bloc: bloc,
+      listener: (context, state) {
+        showAlertDialog(
+          context,
+          title: 'Failed',
+          message: state.message,
+          titlePosButton: 'Ya, Daftar',
+          onPositiveClick: () {
+            bloc.add(RegisterUserEvent(state.data));
+          },
+        );
+      },
+      listenWhen: (previous, current) => current is UserError,
+    );
+  }
+
+  BlocListener _listenSuccessRegisterUser(UserBloc bloc) {
+    return BlocListener<UserBloc, UserState>(
+      bloc: bloc,
+      listener: (context, state) {
+        showAlertDialog(
+          context,
+          title: 'Success',
+          message: state.message,
+          visibleNegativeButton: false,
+          titlePosButton: 'Ok',
+        );
+      },
+      listenWhen: (previous, current) => current is UserRegisterSuccess,
     );
   }
 }

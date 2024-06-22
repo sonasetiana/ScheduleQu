@@ -10,7 +10,7 @@ class SplashBloc extends Cubit<bool> {
 
   void runTimer() {
     Timer(const Duration(seconds: 3), () {
-      emit(false);
+      emit(collection != null);
     });
   }
 }

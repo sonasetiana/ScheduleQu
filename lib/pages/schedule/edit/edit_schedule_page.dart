@@ -1,17 +1,21 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:schedule_qu/bloc/pick_date_time/pick_date_time_cubit.dart';
-import 'package:schedule_qu/bloc/schedule/add/add_schedule_bloc.dart';
-import 'package:schedule_qu/bloc/schedule/schedule_bloc.dart';
-import 'package:schedule_qu/core/app_configs.dart';
 import 'package:schedule_qu/data/models/schedule_model.dart';
 import 'package:schedule_qu/pages/widgets/custom_app_bar.dart';
 
-import '../../bloc/schedule/schedule_cubit.dart';
+import '../../../bloc/schedule/edit/edit_schedule_bloc.dart';
+import '../../../bloc/schedule/schedule_cubit.dart';
 
-class SchedulePage extends StatelessWidget {
-  SchedulePage({super.key});
+class EditSchedulePage extends StatelessWidget {
+  EditSchedulePage({
+    super.key,
+    required this.extraSchedule,
+  });
+  final ScheduleModel extraSchedule;
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descController = TextEditingController();
@@ -28,14 +32,22 @@ class SchedulePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PickDateTimeCubit pickDateTimeBloc = context.read<PickDateTimeCubit>();
-    AddScheduleBloc addScheduleBloc = context.read<AddScheduleBloc>();
+    EditScheduleBloc editScheduleBloc = context.read<EditScheduleBloc>();
+
+    //init data controller
+    titleController.value = TextEditingValue(text: extraSchedule.title);
+    descController.value = TextEditingValue(text: extraSchedule.description);
+    timeController.value =
+        TextEditingValue(text: extraSchedule.displayScheduleTime);
+
+    pickDateTimeBloc.init(extraSchedule.scheduleTime);
 
     return WillPopScope(
       onWillPop: () {
         return _onWillPop(context);
       },
       child: Scaffold(
-        appBar: const CustomAppBar(title: 'Add Schedule'),
+        appBar: const CustomAppBar(title: 'Edit Schedule'),
         body: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(16),
@@ -109,15 +121,9 @@ class SchedulePage extends StatelessWidget {
                   margin: const EdgeInsets.only(top: 8),
                   child: MultiBlocListener(
                     listeners: [
-                      BlocListener<AddScheduleBloc, AddScheduleState>(
-                        bloc: addScheduleBloc,
+                      BlocListener<EditScheduleBloc, EditScheduleState>(
+                        bloc: editScheduleBloc,
                         listener: (context, state) {
-                          titleController.value =
-                              const TextEditingValue(text: '');
-                          descController.value =
-                              const TextEditingValue(text: '');
-                          timeController.value =
-                              const TextEditingValue(text: '');
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               duration: const Duration(seconds: 1),
@@ -126,10 +132,10 @@ class SchedulePage extends StatelessWidget {
                           );
                         },
                         listenWhen: (previous, current) =>
-                            current is AddScheduleSuccess,
+                            current is EditScheduleSuccess,
                       ),
-                      BlocListener<AddScheduleBloc, AddScheduleState>(
-                        bloc: addScheduleBloc,
+                      BlocListener<EditScheduleBloc, EditScheduleState>(
+                        bloc: editScheduleBloc,
                         listener: (context, state) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -139,11 +145,11 @@ class SchedulePage extends StatelessWidget {
                           );
                         },
                         listenWhen: (previous, current) =>
-                            current is AddScheduleError,
+                            current is EditScheduleError,
                       )
                     ],
-                    child: BlocBuilder<AddScheduleBloc, AddScheduleState>(
-                      bloc: addScheduleBloc,
+                    child: BlocBuilder<EditScheduleBloc, EditScheduleState>(
+                      bloc: editScheduleBloc,
                       builder: (context, state) {
                         return ElevatedButton(
                           onPressed: () {
@@ -156,20 +162,20 @@ class SchedulePage extends StatelessWidget {
                                 pickDateTime.isNotEmpty;
 
                             ScheduleModel schedule = ScheduleModel(
-                              notifId: AppConfigs.getNotifId,
-                              title: title,
-                              description: desc,
-                              scheduleTime: Timestamp.fromDate(
-                                pickDateTimeBloc.getDateTime(),
-                              ),
-                              repeat: false,
-                            );
-                            addScheduleBloc.add(
-                              SubmitScheduleEvent(schedule, isFieldValid),
+                                docId: extraSchedule.docId,
+                                notifId: extraSchedule.notifId,
+                                title: title,
+                                description: desc,
+                                scheduleTime: Timestamp.fromDate(
+                                  pickDateTimeBloc.getDateTime(),
+                                ),
+                                repeat: extraSchedule.repeat);
+                            editScheduleBloc.add(
+                              SubmitEditScheduleEvent(schedule, isFieldValid),
                             );
                           },
                           child: Builder(builder: (context) {
-                            if (state is AddScheduleLoading) {
+                            if (state is EditScheduleLoading) {
                               return const SizedBox(
                                 width: 16,
                                 height: 16,

@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:schedule_qu/data/models/schedule_model.dart';
 
+import '../../../core/notification_controller.dart';
 import '../../../data/repository/schedule_repository.dart';
 
 part 'add_schedule_event.dart';
@@ -22,6 +23,7 @@ class AddScheduleBloc extends Bloc<AddScheduleEvent, AddScheduleState> {
           emit(AddScheduleError(failure.message));
         },
         (message) {
+          NotificationController.scheduleNewNotification(event.data);
           emit(AddScheduleSuccess(message));
         },
       );

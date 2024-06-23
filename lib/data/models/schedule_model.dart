@@ -6,17 +6,20 @@ import 'package:intl/intl.dart';
 import '../../core/app_configs.dart';
 
 class ScheduleModel extends Equatable {
+  final int notifId;
   final String docId;
   final String title;
   final String description;
   final Timestamp scheduleTime;
+  final bool repeat;
 
-  const ScheduleModel({
-    this.docId = '',
-    required this.title,
-    required this.description,
-    required this.scheduleTime,
-  });
+  const ScheduleModel(
+      {this.docId = '',
+      required this.notifId,
+      required this.title,
+      required this.description,
+      required this.scheduleTime,
+      required this.repeat});
 
   @override
   List<Object> get props => [title, description, scheduleTime];
@@ -30,26 +33,32 @@ class ScheduleModel extends Equatable {
       String docId, Map<String, dynamic> data) {
     return ScheduleModel(
       docId: docId,
+      notifId: data['notif_id'],
       title: data['title'],
       description: data['description'],
       scheduleTime: data['schedule_time'],
+      repeat: data['repeat'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'notif_id': notifId,
       'title': title,
       'description': description,
       'schedule_time': scheduleTime,
+      'repeat': repeat,
     };
   }
 
   Map<String, dynamic> toParams() {
     return {
       'id': docId,
+      'notif_id': notifId,
       'title': title,
       'description': description,
       'schedule_time': scheduleTime,
+      'repeat': repeat,
     };
   }
 }

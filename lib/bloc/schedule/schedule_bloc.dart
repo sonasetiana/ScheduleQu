@@ -22,4 +22,10 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
       );
     });
   }
+
+  @override
+  void onTransition(Transition<ScheduleEvent, ScheduleState> transition) {
+    super.onTransition(transition);
+    print(transition);
+  }
 }

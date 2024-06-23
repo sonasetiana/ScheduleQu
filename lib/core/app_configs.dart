@@ -8,4 +8,6 @@ class AppConfigs {
   static const formatDisplayDateSchedule = 'EEEE, d MMM y HH:mm';
   static String get genCollectionId =>
       "SC_${DateTime.now().millisecondsSinceEpoch}";
+  static int get getNotifId =>
+      DateTime.now().millisecondsSinceEpoch.remainder(100000);
 }

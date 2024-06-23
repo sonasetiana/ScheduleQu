@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../../core/notification_controller.dart';
 import '../../../data/models/schedule_model.dart';
 import '../../../data/repository/schedule_repository.dart';
 
@@ -23,6 +24,10 @@ class EditScheduleBloc extends Bloc<EditScheduleEvent, EditScheduleState> {
           emit(EditScheduleError(failure.message));
         },
         (message) {
+          NotificationController.scheduleNewNotification(event.schedule);
+          NotificationController.cancelScheduleNotification(
+            event.schedule.notifId,
+          );
           emit(EditScheduleSuccess(message));
         },
       );

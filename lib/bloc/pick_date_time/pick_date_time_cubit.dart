@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -15,6 +16,17 @@ class PickDateTimeCubit extends Cubit<PickDateTimeState> {
             TimeOfDay.now(),
           ),
         );
+
+  void init(Timestamp timeStamp) {
+    emit(
+      PickDateTimeInitial(
+        timeStamp.toDate(),
+        TimeOfDay.fromDateTime(
+          timeStamp.toDate(),
+        ),
+      ),
+    );
+  }
 
   Future<void> pickDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(

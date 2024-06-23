@@ -132,3 +132,24 @@ void showDetailBottomSheet(
     },
   );
 }
+
+Future<void> showLoadingBottomSheet(BuildContext context) {
+  return showModalBottomSheet(
+    context: context,
+    isDismissible: false,
+    enableDrag: false,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: const Card(
+          child: ListTile(
+            leading: CircularProgressIndicator(),
+            title: Text('Mohon Tunggu'),
+            subtitle: Text('Sedang memproses data...'),
+          ),
+        ),
+      );
+    },
+  );
+}

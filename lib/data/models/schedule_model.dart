@@ -1,6 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:intl/intl.dart';
+
+import '../../core/app_configs.dart';
 
 class ScheduleModel extends Equatable {
   final String docId;
@@ -18,6 +21,11 @@ class ScheduleModel extends Equatable {
   @override
   List<Object> get props => [title, description, scheduleTime];
 
+  String get displayScheduleTime => DateFormat(
+        AppConfigs.formatDisplayDateSchedule,
+        AppConfigs.localId,
+      ).format(scheduleTime.toDate());
+
   factory ScheduleModel.fromCollection(
       String docId, Map<String, dynamic> data) {
     return ScheduleModel(
@@ -30,6 +38,15 @@ class ScheduleModel extends Equatable {
 
   Map<String, dynamic> toJson() {
     return {
+      'title': title,
+      'description': description,
+      'schedule_time': scheduleTime,
+    };
+  }
+
+  Map<String, dynamic> toParams() {
+    return {
+      'id': docId,
       'title': title,
       'description': description,
       'schedule_time': scheduleTime,

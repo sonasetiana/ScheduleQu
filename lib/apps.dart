@@ -8,6 +8,8 @@ import 'package:schedule_qu/bloc/splash/splash_bloc.dart';
 import 'package:schedule_qu/data/repository/schedule_repository.dart';
 import 'app_routes.dart';
 import 'bloc/pick_date_time/pick_date_time_cubit.dart';
+import 'bloc/schedule/delete/delete_schedule_bloc.dart';
+import 'bloc/schedule/edit/edit_schedule_bloc.dart';
 import 'bloc/user/user_bloc.dart';
 import 'data/repository/user_repository.dart';
 
@@ -39,6 +41,12 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => AddScheduleBloc(scheduleRepository),
+        ),
+        BlocProvider(
+          create: (context) => EditScheduleBloc(scheduleRepository),
+        ),
+        BlocProvider(
+          create: (context) => DeleteScheduleBloc(scheduleRepository),
         ),
       ],
       child: MaterialApp.router(
